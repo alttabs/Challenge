@@ -36,12 +36,6 @@ input[type="text"]:focus, input[type="email"]:focus, input[type="password"]:focu
   outline: 1px solid #7f4fff;
 }
 
-.name-container {
-  display: flex;
-  flex-direction: column; 
-}
-
-
 .password-container {
   display: flex;
   align-items: center;

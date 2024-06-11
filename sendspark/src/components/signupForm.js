@@ -1,16 +1,17 @@
 import React, { useState } from 'react';
 import { Formik, Form, Field } from 'formik';
+import { useNavigate } from 'react-router-dom';
 import * as Yup from 'yup';
 import './../styles/SignupForm.css';
 
-const WarnIcon = ({ showRequirements, unmetRequirements, togglePasswordVisibility   }) => {
+const WarnIcon = ({ showRequirements, unmetRequirements, togglePasswordVisibility }) => {
   return (
     <span className="warn-icon" onClick={togglePasswordVisibility}>
       {showRequirements && (
-        <i className="fas fa-triangle-exclamation"></i> 
+        <i className="fas fa-triangle-exclamation"></i>
       )}
       {showRequirements && (
-        <span className="tooltip"> 
+        <span className="tooltip">
           {unmetRequirements.map((requirement, index) => (
             <span key={index} className="tooltip-item">
               <i className="fa fa-circle-check"></i> {requirement}
@@ -22,12 +23,10 @@ const WarnIcon = ({ showRequirements, unmetRequirements, togglePasswordVisibilit
   );
 };
 
-const PasswordInput = ({ handleBlur}) => {
-  const [password, setPassword] = useState('');
+const PasswordInput = ({ field, form, handleBlur }) => {
   const [showRequirements, setShowRequirements] = useState(false);
   const [unmetRequirements, setUnmetRequirements] = useState([]);
   const [showPassword, setShowPassword] = useState(false);
-
 
   const validatePassword = (password) => {
     const requirements = [];
@@ -42,12 +41,12 @@ const PasswordInput = ({ handleBlur}) => {
       requirements.push('One uppercase letter (A-Z)');
     }
     setUnmetRequirements(requirements);
-    setShowRequirements(requirements.length > 0); 
+    setShowRequirements(requirements.length > 0);
     return requirements.length === 0;
   };
 
   const handlePasswordChange = (event) => {
-    setPassword(event.target.value);
+    form.setFieldValue(field.name, event.target.value);
     validatePassword(event.target.value);
   };
 
@@ -59,16 +58,15 @@ const PasswordInput = ({ handleBlur}) => {
     <div>
       <label htmlFor="password" className='form-label'>Password:</label>
       <div className="password-input-container">
-      <Field
-        id="password"
-        name="password"
-        type={showPassword ? 'text' : 'password'}
-        value={password}
-        onChange={handlePasswordChange}
-        onBlur={handleBlur}
-        className="password-input" 
-      />
-      <WarnIcon showRequirements={showRequirements} unmetRequirements={unmetRequirements} togglePasswordVisibility={togglePasswordVisibility}/>
+        <Field
+          id="password"
+          name="password"
+          type={showPassword ? 'text' : 'password'}
+          value={field.value}
+          onChange={handlePasswordChange}
+          onBlur={handleBlur}
+        />
+        <WarnIcon showRequirements={showRequirements} unmetRequirements={unmetRequirements} togglePasswordVisibility={togglePasswordVisibility} />
       </div>
     </div>
   );
@@ -84,6 +82,8 @@ const validationSchema = Yup.object().shape({
   company: Yup.string()
     .required('Company is required')
     .max(120, 'Company cannot exceed 120 characters'),
+  jobTitle: Yup.string()
+    .nullable(),
   workEmail: Yup.string()
     .required('Work Email is required')
     .email('Invalid email format'),
@@ -93,7 +93,9 @@ const validationSchema = Yup.object().shape({
     .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/, 'Password must contain at least one lowercase, one uppercase, one number, and one special character'),
 });
 
-const SignupForm = () => {
+const SignupForm = ({ onSignup }) => {
+  const navigate = useNavigate();
+
   return (
     <div className="signup-form">
       <h2 className="title">Nice to meet you!</h2>
@@ -109,42 +111,43 @@ const SignupForm = () => {
         }}
         validationSchema={validationSchema}
         onSubmit={(values) => {
-          console.log(values);
-        }}
+            onSignup(values); 
+            navigate('/home');
+          }
+        }
       >
         {({ values, errors, touched, handleChange, handleBlur }) => (
           <Form>
             <div className='row'>
-              <div className='col-md-6 mb-3'>
-              <label htmlFor="firstName" className='form-label'>First Name:</label>
-              <Field
-                id="firstName"
-                name="firstName"
-                type="text"
-                value={values.firstName}
-                onChange={handleChange}
-                onBlur={handleBlur}
-              />
-              {errors.firstName && touched.firstName && (
-                <div className="error">{errors.firstName}</div>
-              )}
+              <div className='col mb-3'>
+                <label htmlFor="firstName" className='form-label'>First Name:</label>
+                <Field
+                  id="firstName"
+                  name="firstName"
+                  type="text"
+                  value={values.firstName}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                />
+                {errors.firstName && touched.firstName && (
+                  <div className="error">{errors.firstName}</div>
+                )}
               </div>
-              <div className='col-md-6 mb-3'>
-              <label htmlFor="lastName" className='form-label'>Last Name:</label>
-              <Field
-                id="lastName"
-                name="lastName"
-                type="text"
-                value={values.lastName}
-                onChange={handleChange}
-                onBlur={handleBlur}
-              />
-              {errors.lastName && touched.lastName && (
-                <div className="error">{errors.lastName}</div>
-              )}
+              <div className='col mb-3'>
+                <label htmlFor="lastName" className='form-label'>Last Name:</label>
+                <Field
+                  id="lastName"
+                  name="lastName"
+                  type="text"
+                  value={values.lastName}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                />
+                {errors.lastName && touched.lastName && (
+                  <div className="error">{errors.lastName}</div>
+                )}
               </div>
             </div>
-
             <div>
               <label htmlFor="company" className='form-label'>Company:</label>
               <Field
@@ -173,7 +176,7 @@ const SignupForm = () => {
             </div>
 
             <div>
-              <label htmlFor="workEmail" >Work Email:</label>
+              <label htmlFor="workEmail">Work Email:</label>
               <Field
                 id="workEmail"
                 name="workEmail"
@@ -187,12 +190,10 @@ const SignupForm = () => {
               )}
             </div>
 
-            <PasswordInput
-              values={values}
-              handleChange={handleChange}
+            <Field
+              name="password"
+              component={PasswordInput}
               handleBlur={handleBlur}
-              errors={errors}
-              touched={touched}
             />
 
             <button type="submit">Submit</button>
