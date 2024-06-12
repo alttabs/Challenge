@@ -9,7 +9,10 @@ require('dotenv').config();
 router.post('/', async (req, res) => {
   try {
     const { workEmail, password, company, jobTitle, firstName, lastName } = req.body;
-    console.log(req.body);
+
+    if (!workEmail || !password || !company || !firstName) {
+      return res.status(400).json({ message: 'All fields are required' });
+    }
     const existingUser = await User.findOne({ workEmail });
     if (existingUser) {
       return res.status(400).json({ message: 'A user with this email already exists' });
@@ -76,6 +79,9 @@ router.delete('/:id', async (req, res) => {
 router.post('/login', async (req, res) => {
   try {
     const { workEmail, password } = req.body;
+    if (!workEmail || !password) {
+      return res.status(400).json({ message: 'All fields are required' });
+    }
     const user = await User.findOne({ workEmail }, { password: 1, workEmail: 1, firstName: 1 });
 
     if (!user) {

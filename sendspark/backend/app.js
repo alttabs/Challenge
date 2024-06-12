@@ -1,7 +1,8 @@
 const express = require('express');
 const cors = require('cors');
-const mongoose = require('mongoose'); 
-const UserSchema = require('./models/User'); 
+const mongoose = require('mongoose');
+const swaggerUI = require('swagger-ui-express');
+const swaggerDocument = require('./swagger.json');
 
 const app = express();
 const port = 3001;
@@ -15,6 +16,8 @@ mongoose.connect(uri)
   .catch(err => console.error('MongoDB connection error:', err));
 
 app.use('/users', require('./routes/users'));
+
+app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocument))
 
 app.listen(port, () => {
   console.log(`Server listening on port ${port}`);
