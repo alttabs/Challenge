@@ -3,7 +3,6 @@ import { Formik, Form, Field } from 'formik';
 import { useNavigate } from 'react-router-dom';
 import * as Yup from 'yup';
 import './../styles/LoginForm.css';
-import { Link } from 'react-router-dom';
 
 const LoginForm = ({ setUser }) => {
   const navigate = useNavigate();
