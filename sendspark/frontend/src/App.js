@@ -1,48 +1,63 @@
-import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import React, { useState, useEffect, createContext, useContext } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import SignupForm from './components/signupForm';
 import HomePage from './components/homePage';
 import LoginForm from './components/loginForm';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import axios from 'axios';
+
+const UserContext = createContext();
 
 function App() {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
+    const token = localStorage.getItem('token');
+    if (token) {
+      axios.get(`${process.env.REACT_APP_API_USERS_URL}/verify`, {
+        headers: {
+          Authorization: token,
+        },
+      })
+        .then(response => {
+          setUser((response.data.user));
+        })
+        .catch(error => {
+          console.error('Token verification error:', error);
+          localStorage.removeItem('user');
+          localStorage.removeItem('token');
+          setUser(null);
+        });
     }
   }, []);
 
-  const handleSignup = (userData) => {
-    const storedUsers = localStorage.getItem('users');
-    const users = storedUsers ? JSON.parse(storedUsers) : [];
-    const existingUser = users.find(user => user.workEmail === userData.workEmail);
-
-    if (existingUser) {
-      console.log('Login');
-    } else {
-      users.push(userData);
-      localStorage.setItem('users', JSON.stringify(users));
-      setUser(userData);
-    }
-  };
-
-  const handleLogin = (userData) => {
-    setUser(userData);
-  };
-
-
   return (
-    <Router>
-      <Routes>
-        <Route path="/signup" element={<SignupForm onSignup={handleSignup} />} />
-        <Route path="/home" element={user ? <HomePage user={user} /> : <Navigate to="/" />} />
-        <Route path="/login" element={<LoginForm onSignup={handleLogin} />} />
-      </Routes>
-    </Router>
+    <UserContext.Provider value={{ user, setUser }}>
+      <Router>
+        <Routes>
+          <Route path="/signup" element={<SignupForm onSignup={handleSignup} />} />
+          <Route path="/home" element={<PrivateRoute><HomePage /></PrivateRoute>} />
+          <Route path="/" element={<LoginForm setUser={setUser} />} />
+        </Routes>
+      </Router>
+    </UserContext.Provider>
   );
 }
 
+function PrivateRoute({ children }) {
+  const token = localStorage.getItem('token');
+
+  return token ? children : <Navigate to="/" />;
+}
+
+
+const handleSignup = async (userData) => {
+  try {
+    console.log(userData);
+  } catch (error) {
+    console.error('Signup error:', error);
+  }
+};
+
 export default App;
+export { UserContext };

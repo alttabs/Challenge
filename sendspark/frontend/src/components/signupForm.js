@@ -115,18 +115,17 @@ const SignupForm = ({ onSignup }) => {
         validationSchema={validationSchema}
         onSubmit={async (values) => {
           try {
-            console.log('Submitting form:', values);
             const response = await fetch(`${process.env.REACT_APP_API_USERS_URL}/`, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json'
               },
-              body: JSON.stringify({ workEmail: values.workEmail, password: values.password })
+              body: JSON.stringify({ workEmail: values.workEmail, password: values.password, firstName: values.firstName, lastName: values.lastName, company: values.company, jobTitle: values.jobTitle })
             });
             if (response.ok) {
               console.log('User created successfully!');
               onSignup(values);
-              navigate('/home');
+              navigate('/');
             } else {
               const errorData = await response.json();
               console.error('Signup error:', errorData.message);
@@ -219,7 +218,7 @@ const SignupForm = ({ onSignup }) => {
             />
             {errorMessage && <div className="error">{errorMessage}</div>}
             <button type="submit">Submit</button>
-            <Link to="/login" className="login-link">Login</Link>
+            <button type="button" className="login-link" onClick={() => navigate('/')}>Login</button>
           </Form>
         )}
       </Formik>

@@ -101,7 +101,6 @@ input[type="password"]:focus {
 }
 
 .login-link {
-  display: flex;
   color: #2e2d2d;
   padding: 10px 20px;
   cursor: pointer;
@@ -111,6 +110,4 @@ input[type="password"]:focus {
   background-color: #F8F8F8;
   border-radius: 5px;
   border: 1px solid #7f4fff;
-  flex-direction: column;
-  text-decoration: none;
 }

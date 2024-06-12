@@ -100,7 +100,6 @@ input[type="password"]:focus {
 }
 
 .signup-link {
-  display: flex;
   color: #2e2d2d;
   padding: 10px 20px;
   cursor: pointer;
@@ -110,6 +109,30 @@ input[type="password"]:focus {
   background-color: #F8F8F8;
   border-radius: 5px;
   border: 1px solid #7f4fff;
-  flex-direction: column;
-  text-decoration: none;
+}
+
+
+button[type="submit"] {
+  cursor: pointer;
+  display: inline-block;
+  position: relative;
+  transition: 0.5s;
+}
+
+button[type="submit"]:after {
+  position: absolute;
+  opacity: 0;
+  top: 14px;
+  right: -20px;
+  transition: 0.5s;
+}
+
+button[type="submit"]:hover {
+  padding-right: 24px;
+  padding-left: 8px;
+}
+
+button[type="submit"]:hover:after {
+  opacity: 1;
+  right: 10px;
 }

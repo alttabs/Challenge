@@ -5,7 +5,7 @@ import * as Yup from 'yup';
 import './../styles/LoginForm.css';
 import { Link } from 'react-router-dom';
 
-const LoginForm = ({ onLogin }) => {
+const LoginForm = ({ setUser }) => {
   const navigate = useNavigate();
   const [errorMessage, setErrorMessage] = useState(null);
 
@@ -36,8 +36,10 @@ const LoginForm = ({ onLogin }) => {
               body: JSON.stringify({ workEmail: values.workEmail, password: values.password })
             });
             if (response.ok) {
+              const data = await response.json();
               console.log('Login successful!');
-              // onLogin(values); 
+              localStorage.setItem('token', data.token);
+              setUser(data.user);
               navigate('/home');
             } else {
               const errorData = await response.json();
@@ -83,7 +85,7 @@ const LoginForm = ({ onLogin }) => {
 
             {errorMessage && <div className="error">{errorMessage}</div>}
             <button type="submit">Login</button>
-            <Link to="/signup" className="signup-link">Don't have an account? Signup</Link> {/* Add the signup link */}
+            <button type="button" className='signup-link' onClick={() => navigate('/signup')}>Signup</button>
           </Form>
         )}
       </Formik>

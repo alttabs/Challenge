@@ -1,9 +1,25 @@
-import React from 'react';
+import React, { useContext } from 'react';
+import { UserContext } from '../App';
+import { useNavigate } from 'react-router-dom';
+import './../styles/homePage.css';
 
-const HomePage = ({ user }) => {
+const HomePage = () => {
+  const { user, setUser } = useContext(UserContext);
+  const navigate = useNavigate();
+
+  const handleSignOut = () => {
+    localStorage.removeItem('user');
+    localStorage.removeItem('token');
+    setUser(null);
+    navigate('/');
+  };
+
   return (
-    <div>
-      <h1>Welcome, {user.firstName}!</h1>
+    <div className='home-container'>
+      <div className='home-header'>
+        <h2>Welcome, {user?.firstName}!</h2>
+      </div>
+      <button className='sign-out-button' onClick={handleSignOut}>Sign Out</button>
     </div>
   );
 };
