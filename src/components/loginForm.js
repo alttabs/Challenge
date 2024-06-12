@@ -26,7 +26,6 @@ const LoginForm = ({ setUser }) => {
         })}
         onSubmit={async (values) => {
           try {
-            console.log('Submitting form:', values);
             const response = await fetch(`${process.env.REACT_APP_API_USERS_URL}/login`, {
               method: 'POST',
               headers: {
