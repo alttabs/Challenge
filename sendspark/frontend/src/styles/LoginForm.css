@@ -1,28 +1,28 @@
 @import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css");
 
-.signup-form {
+.login-form {
   border-radius: 10px;
   padding: 20px;
   margin: 50px auto;
   width: 500px;
 }
 
-.signup-form label {
+.login-form label {
   display: flex;
   margin-bottom: 5px;
   font-weight: normal;
 }
 
-.signup-form input[type="text"],
-.signup-form input[type="email"],
-.signup-form input[type="password"] {
+.login-form input[type="text"],
+.login-form input[type="email"],
+.login-form input[type="password"] {
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 5px;
   width: 100%;
 }
 
-.signup-form button[type="submit"] {
+.login-form button[type="submit"] {
   background-color: #7f4fff;
   color: white;
   border: none;
@@ -33,7 +33,6 @@
   width: 100%;
 }
 
-input[type="text"]:focus,
 input[type="email"]:focus,
 input[type="password"]:focus {
   outline: 1px solid #7f4fff;
@@ -100,7 +99,7 @@ input[type="password"]:focus {
   margin-right: 5px;
 }
 
-.login-link {
+.signup-link {
   display: flex;
   color: #2e2d2d;
   padding: 10px 20px;

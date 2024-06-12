@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import SignupForm from './components/signupForm'; // Ensure correct path
-import HomePage from './components/homePage'; // Ensure correct path
+import SignupForm from './components/signupForm';
+import HomePage from './components/homePage';
+import LoginForm from './components/loginForm';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
@@ -24,16 +25,21 @@ function App() {
     } else {
       users.push(userData);
       localStorage.setItem('users', JSON.stringify(users));
-      setUser(userData); // Update the user state
+      setUser(userData);
     }
+  };
+
+  const handleLogin = (userData) => {
+    setUser(userData);
   };
 
 
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<SignupForm onSignup={handleSignup} />} />
+        <Route path="/signup" element={<SignupForm onSignup={handleSignup} />} />
         <Route path="/home" element={user ? <HomePage user={user} /> : <Navigate to="/" />} />
+        <Route path="/login" element={<LoginForm onSignup={handleLogin} />} />
       </Routes>
     </Router>
   );

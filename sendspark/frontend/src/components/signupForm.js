@@ -3,6 +3,7 @@ import { Formik, Form, Field } from 'formik';
 import { useNavigate } from 'react-router-dom';
 import * as Yup from 'yup';
 import './../styles/SignupForm.css';
+import { Link } from 'react-router-dom';
 
 const WarnIcon = ({ showRequirements, unmetRequirements, togglePasswordVisibility }) => {
   return (
@@ -95,6 +96,8 @@ const validationSchema = Yup.object().shape({
 
 const SignupForm = ({ onSignup }) => {
   const navigate = useNavigate();
+  const [errorMessage, setErrorMessage] = useState(null);
+
 
   return (
     <div className="signup-form">
@@ -110,10 +113,29 @@ const SignupForm = ({ onSignup }) => {
           password: '',
         }}
         validationSchema={validationSchema}
-        onSubmit={(values) => {
-            onSignup(values); 
-            navigate('/home');
+        onSubmit={async (values) => {
+          try {
+            console.log('Submitting form:', values);
+            const response = await fetch(`${process.env.REACT_APP_API_USERS_URL}/`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ workEmail: values.workEmail, password: values.password })
+            });
+            if (response.ok) {
+              console.log('User created successfully!');
+              onSignup(values);
+              navigate('/home');
+            } else {
+              const errorData = await response.json();
+              console.error('Signup error:', errorData.message);
+              setErrorMessage(errorData.message);
+            }
+          } catch (error) {
+            console.error('Signup error:', error);
           }
+        }
         }
       >
         {({ values, errors, touched, handleChange, handleBlur }) => (
@@ -195,8 +217,9 @@ const SignupForm = ({ onSignup }) => {
               component={PasswordInput}
               handleBlur={handleBlur}
             />
-
+            {errorMessage && <div className="error">{errorMessage}</div>}
             <button type="submit">Submit</button>
+            <Link to="/login" className="login-link">Login</Link>
           </Form>
         )}
       </Formik>
