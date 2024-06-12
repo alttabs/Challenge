@@ -6,13 +6,13 @@ const bcrypt = require('bcrypt');
 // POST a new user
 router.post('/', async (req, res) => {
   try {
-    const { workEmail, password } = req.body;
+    const { workEmail, password, company, jobTitle, firstName, lastName } = req.body;
     const existingUser = await User.findOne({ workEmail });
     if (existingUser) {
       return res.status(400).json({ message: 'A user with this email already exists' });
     }
 
-    const newUser = new User({ workEmail, password });
+    const newUser = new User({ workEmail, password, company, jobTitle, firstName, lastName });
 
     const savedUser = await newUser.save();
     res.status(201).json(savedUser);
@@ -25,12 +25,36 @@ router.post('/', async (req, res) => {
 // GET all users
 router.get('/', async (req, res) => {
   try {
-    const users = await User.find();
-    res.json(users);
+    const { page = 1, limit = 10, company, jobTitle } = req.query; // Get search terms from query params
+    const skip = (page - 1) * limit;
+
+    const query = {};
+
+    if (company || jobTitle) {
+      query.$or = [
+        company && { company: { $regex: company, $options: 'i' } },
+        jobTitle && { jobTitle: { $regex: jobTitle, $options: 'i' } },
+      ].filter(Boolean);
+    }
+
+    const users = await User.find(query)
+      .skip(skip)
+      .limit(limit);
+
+    const totalUsers = await User.countDocuments(query);
+
+    res.json({
+      users,
+      currentPage: parseInt(page),
+      totalPages: Math.ceil(totalUsers / limit),
+      totalUsers
+    });
   } catch (error) {
     res.status(500).json({ message: 'Error fetching users' });
+    console.error(error);
   }
 });
+
 
 // DELETE a user by ID
 router.delete('/:id', async (req, res) => {

@@ -4,7 +4,7 @@ const bcrypt = require('bcryptjs');
 const UserSchema = new mongoose.Schema({
   firstName: {
     type: String,
-    required: false
+    required: true
   },
   lastName: {
     type: String,
@@ -12,7 +12,7 @@ const UserSchema = new mongoose.Schema({
   },
   company: {
     type: String,
-    required: false
+    required: true
   },
   jobTitle: {
     type: String,
@@ -30,7 +30,7 @@ const UserSchema = new mongoose.Schema({
   }
 });
 
-UserSchema.pre('save', async function(next) {
+UserSchema.pre('save', async function (next) {
   if (!this.isModified('password')) return next();
 
   const salt = await bcrypt.genSalt(10);
@@ -38,7 +38,7 @@ UserSchema.pre('save', async function(next) {
   next();
 });
 
-UserSchema.methods.comparePassword = async function(candidatePassword) {
+UserSchema.methods.comparePassword = async function (candidatePassword) {
   return await bcrypt.compare(candidatePassword, this.password);
 };
 
